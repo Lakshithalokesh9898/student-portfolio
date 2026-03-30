@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
 // ✅ MongoDB Connection
-mongoose.connect("mongodb://127.0.0.1:27017/portfolio")
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
@@ -63,4 +63,9 @@ app.put("/api/projects/:id", async (req, res) => {
 // ================= START SERVER =================
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
+});
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
 });
