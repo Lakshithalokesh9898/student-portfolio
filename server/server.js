@@ -4,6 +4,7 @@ const path = require("path");
 
 const app = express();
 
+// Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
@@ -14,7 +15,6 @@ mongoose.connect(process.env.MONGO_URI)
 
 // ✅ Import Model
 const Project = require("../models/Project");
-
 
 // ================= API ROUTES =================
 
@@ -59,11 +59,7 @@ app.put("/api/projects/:id", async (req, res) => {
   }
 });
 
-
 // ================= START SERVER =================
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
-});
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
