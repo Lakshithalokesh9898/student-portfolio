@@ -1,76 +1,134 @@
 const form = document.getElementById("projectForm");
 
+let editId = null; // ✅ for edit feature
+
+// ================= ADD / UPDATE =================
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const title = document.getElementById("title").value;
-  const tech = document.getElementById("tech").value;
-  const image = document.getElementById("image").value;
+  const project = {
+    title: document.getElementById("title").value,
+    tech: document.getElementById("tech").value,
+    image: document.getElementById("image").value
+  };
 
-  const res = await fetch("/api/projects", {
-    method: "POST",
+  // ✅ VALIDATION
+  if (!project.title || !project.tech || !project.image) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  let url = "/api/projects";
+  let method = "POST";
+
+  // ✅ EDIT MODE
+  if (editId) {
+    url = "/api/projects/" + editId;
+    method = "PUT";
+  }
+
+  const res = await fetch(url, {
+    method: method,
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ title, tech, image })
+    body: JSON.stringify(project)
   });
 
-  const data = await res.text();
-  document.getElementById("msg").innerText = data;
+  const msg = await res.text();
+  document.getElementById("msg").innerText = msg;
 
+  form.reset();
+  editId = null;
   loadProjects();
 });
 
-// ✅ Load Projects
+// ================= LOAD PROJECTS =================
 async function loadProjects() {
+  const loading = document.getElementById("loading");
+  if (loading) loading.style.display = "block"; // ✅ show loading
+
+  const res = await fetch("/api/projects");
+  const data = await res.json();
+
+  if (loading) loading.style.display = "none"; // ✅ hide loading
+
+  const list = document.getElementById("projectList");
+  list.innerHTML = "";
+
+  data.forEach(p => {
+    const div = document.createElement("div");
+    div.classList.add("project-card");
+
+    div.innerHTML = `
+      <img src="${p.image}" alt="project image" />
+      <h3>${p.title}</h3>
+      <p>${p.tech}</p>
+
+      <button onclick="editProject('${p._id}', '${p.title}', '${p.tech}', '${p.image}')">Edit</button>
+      <button onclick="deleteProject('${p._id}')">Delete</button>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+// ================= EDIT =================
+function editProject(id, title, tech, image) {
+  document.getElementById("title").value = title;
+  document.getElementById("tech").value = tech;
+  document.getElementById("image").value = image;
+
+  editId = id;
+}
+
+// ================= DELETE =================
+async function deleteProject(id) {
+  if (confirm("Are you sure you want to delete?")) {
+    await fetch("/api/projects/" + id, {
+      method: "DELETE"
+    });
+
+    loadProjects();
+  }
+}
+
+// ================= SEARCH =================
+async function searchProjects() {
+  const input = document.getElementById("search").value.toLowerCase();
+
   const res = await fetch("/api/projects");
   const data = await res.json();
 
   const list = document.getElementById("projectList");
   list.innerHTML = "";
 
-  data.forEach(project => {
+  const filtered = data.filter(p =>
+    p.title.toLowerCase().includes(input) ||
+    p.tech.toLowerCase().includes(input)
+  );
+
+  filtered.forEach(p => {
     const div = document.createElement("div");
+    div.classList.add("project-card");
+
     div.innerHTML = `
-    <img src="${project.image}" width="100%" style="border-radius:10px;">
-      <h3>${project.title}</h3>
-      <p>${project.tech}</p>
-      <button onclick="deleteProject('${project._id}')">Delete</button>
-      <button onclick="editProject('${project._id}', '${project.title}', '${project.tech}')">Edit</button>
+      <img src="${p.image}" />
+      <h3>${p.title}</h3>
+      <p>${p.tech}</p>
+
+      <button onclick="editProject('${p._id}', '${p.title}', '${p.tech}', '${p.image}')">Edit</button>
+      <button onclick="deleteProject('${p._id}')">Delete</button>
     `;
+
     list.appendChild(div);
   });
 }
 
-window.onload = loadProjects;
-async function deleteProject(id) {
-  const res = await fetch(`/api/projects/${id}`, {
-    method: "DELETE"
-  });
-
-  const data = await res.text();
-  alert(data);
-
-  loadProjects(); // refresh list
+// ================= DARK MODE =================
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
 }
 
-async function editProject(id, oldTitle, oldTech) {
-  const newTitle = prompt("Enter new title:", oldTitle);
-  const newTech = prompt("Enter new tech:", oldTech);
-
-  if (!newTitle || !newTech) return;
-
-  const res = await fetch(`/api/projects/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ title: newTitle, tech: newTech })
-  });
-
-  const data = await res.text();
-  alert(data);
-
-  loadProjects(); // refresh
-}
-const image = document.getElementById("image").value;
+// ================= AUTO LOAD =================
+loadProjects();

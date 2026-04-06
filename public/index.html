@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Portfolio</title>
+  <title>Student Portfolio Management System</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -15,6 +15,7 @@
 
     <ul>
       <li><a href="#home">Home</a></li>
+      <li><a href="#skills">Skills</a></li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
@@ -22,11 +23,11 @@
 
   <!-- HOME -->
   <section id="home">
-    <h1>Welcome to My Portfolio</h1>
-    <p>I am a student learning full stack development 🚀</p>
+    <h1>Hi, I'm a Student Developer 👋</h1>
+    <p>I build web applications using HTML, CSS, JavaScript, Node.js & MongoDB 🚀</p>
   </section>
 
-  <!-- SKILLS (NEW FEATURE 🔥) -->
+  <!-- SKILLS -->
   <section id="skills">
     <h2>My Skills</h2>
 
@@ -42,19 +43,30 @@
 
   <!-- PROJECTS -->
   <section id="projects">
-    <h2>Add Project</h2>
+    <h2>Add / Edit Project</h2>
 
     <form id="projectForm">
       <input type="text" id="title" placeholder="Project Title" required>
       <input type="text" id="tech" placeholder="Tech Used" required>
       <input type="text" id="image" placeholder="Image URL" required>
-      <button type="submit">Add Project</button>
+      <button type="submit">Save Project</button>
     </form>
 
     <p id="msg"></p>
 
-    <!-- SEARCH BAR 🔍 -->
-    <input type="text" id="search" placeholder="Search projects..." onkeyup="searchProjects()">
+    <!-- 🔍 SEARCH -->
+    <input 
+      type="text" 
+      id="search" 
+      placeholder="Search projects..." 
+      onkeyup="searchProjects()"
+      style="padding:10px; width:250px; border-radius:5px; border:none;"
+    >
+
+    <!-- ⏳ LOADING MESSAGE -->
+    <p id="loading" style="display:none; margin-top:10px;">
+      Loading projects...
+    </p>
 
     <h2>My Projects</h2>
     <div id="projectList"></div>
@@ -63,12 +75,16 @@
   <!-- CONTACT -->
   <section id="contact">
     <h2>Contact Me</h2>
-    <p>Email: your@email.com</p>
+    <p>Email: lakshithalokesh69@gmail.com</p>
   </section>
+
+  <!-- FOOTER -->
+  <footer style="background:#111; padding:15px; color:white;">
+    <p>© 2026 Student Portfolio | Built with ❤️</p>
+  </footer>
 
   <script src="script.js"></script>
 
 </body>
 </html>
-
-
+  
